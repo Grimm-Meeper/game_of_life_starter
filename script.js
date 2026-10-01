@@ -1,7 +1,14 @@
+//paste: python3 -m http.server
+//goto: http://localhost:8000
+//if in codespace paste: python -m http.server
+//and do normal
+
 let grid;
 let cols;
 let rows;
 let resolution = 15; // Size of each cell
+let running = false
+let speed = 60
 
 function setup() {
   createCanvas(windowWidth, windowHeight - 50);
@@ -14,9 +21,50 @@ function setup() {
 
 function draw() {
   background(240); // Light gray background
-
   // 1. Draw the grid
+  for(let i = 0; i < cols; i++){
+    for(let j = 0; j < rows; j++){
+      if(grid[i][j] == 1){
+        fill(255, 255, 255)
+      } else {
+        fill(0, 0, 0)
+      }
+      noStroke;
+      rect(i * resolution, j * resolution, resolution, resolution)
+    }
+  }
   // 2. Compute next state (if not paused)
+  if(running && frameCount % speed == 0){
+    console.log("step")
+    for(let i = 0; i < cols; i++){
+      for(let j = 0; j < rows; j++){
+        let negbors = countNeighbors(i, j)
+        if((negbors == 2 && grid[i][j] == 1 )|| negbors == 3){
+          if(grid[i][j] == 1){
+            grid[i][j] = 1.1
+            console.log("alive, survivng")
+          } else {
+            grid[i][j] = 1
+            console.log("alive, dying")
+          }
+        } else {
+          if(grid[i][j] == 1){
+            grid[i][j] = 0.9
+            console.log("dead, surving")
+          } else {
+            grid[i][j] = 0.1
+            console.log("dead, dying")
+          }
+        }
+      }
+    }
+    for(let i = 0; i < cols; i++){
+      for(let j = 0; j < rows; j++){
+        grid[i][j] = Math.floor(grid[i][j])
+      }
+    }
+  }
+
 
 }
 
@@ -32,11 +80,18 @@ function mouseDragged() {
 }
 
 function toggleCell() {
+  let TX = Math.floor(mouseX / resolution)
+  let TY = Math.floor(mouseY / resolution)
+  grid[TX][TY] += 1
+  grid[TX][TY] = grid[TX][TY] % 2
 }
 
 // 2. Keyboard Controls
 function keyPressed() {
-
+  if(key === "r"){
+    running = !running;
+    console.log(running);
+  }
 }
 
 // --- HELPER FUNCTIONS ---
@@ -57,6 +112,17 @@ function randomizeGrid() {
   }
 }
 
-function countNeighbors(grid, x, y) {
-
+function countNeighbors(x, y) {
+  let ans = 0;
+  for(let i = x - 1; i <= x + 1; i++){
+    for(let j = y -1 ; j<= y + 1; j++){
+      if(i != -1 && j != -1 && i <= rows && j <= cols){
+        if(grid[i][j] == 1.1 || grid[i][j] == 0.9){
+          ans += 1;
+        }
+      }
+    }
+  }
+  return ans;
 }
+
