@@ -44,23 +44,27 @@ function draw() {
             grid[i][j] = 1.1
             console.log("alive, survivng")
           } else {
-            grid[i][j] = 1
-            console.log("alive, dying")
+            grid[i][j] = 0.1
+            console.log("dead, born")
           }
         } else {
           if(grid[i][j] == 1){
             grid[i][j] = 0.9
-            console.log("dead, surving")
+            console.log("alive, dying")
           } else {
-            grid[i][j] = 0.1
-            console.log("dead, dying")
+            grid[i][j] = -0.1
+            console.log("dead, staying")
           }
         }
       }
     }
     for(let i = 0; i < cols; i++){
       for(let j = 0; j < rows; j++){
-        grid[i][j] = Math.floor(grid[i][j])
+        if (grid[i][j] == 0.1 || grid[i][j] == 1.1){
+          grid[i][j] = 1
+        } else {
+          grid[i][j] = 0
+        }
       }
     }
   }
@@ -116,9 +120,13 @@ function countNeighbors(x, y) {
   let ans = 0;
   for(let i = x - 1; i <= x + 1; i++){
     for(let j = y -1 ; j<= y + 1; j++){
-      if(i != -1 && j != -1 && i <= rows && j <= cols){
-        if(grid[i][j] == 1.1 || grid[i][j] == 0.9){
-          ans += 1;
+      if (!(i == x && j == y)){
+        try {
+          if(grid[i][j] == 1.1 || grid[i][j] == 0.9 || grid[i][j] == 1){
+            ans += 1;
+          }
+        } catch {
+          console.log("Out of bounds")
         }
       }
     }
