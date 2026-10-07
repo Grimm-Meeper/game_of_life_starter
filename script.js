@@ -7,8 +7,10 @@ let grid;
 let cols;
 let rows;
 let resolution = 15; // Size of each cell
-let running = false
-let speed = 60
+let running = false;
+let speed = 6;
+let born = [3]
+let survive = [2, 3]
 
 function setup() {
   createCanvas(windowWidth, windowHeight - 50);
@@ -27,7 +29,7 @@ function draw() {
       if(grid[i][j] == 1){
         fill(255, 255, 255)
       } else {
-        fill(0, 0, 0)
+        fill(40, 40, 40)
       }
       noStroke;
       rect(i * resolution, j * resolution, resolution, resolution)
@@ -35,38 +37,8 @@ function draw() {
   }
   // 2. Compute next state (if not paused)
   if(running && frameCount % speed == 0){
-    console.log("step")
-    for(let i = 0; i < cols; i++){
-      for(let j = 0; j < rows; j++){
-        let negbors = countNeighbors(i, j)
-        if((negbors == 2 && grid[i][j] == 1 )|| negbors == 3){
-          if(grid[i][j] == 1){
-            grid[i][j] = 1.1
-            console.log("alive, survivng")
-          } else {
-            grid[i][j] = 0.1
-            console.log("dead, born")
-          }
-        } else {
-          if(grid[i][j] == 1){
-            grid[i][j] = 0.9
-            console.log("alive, dying")
-          } else {
-            grid[i][j] = -0.1
-            console.log("dead, staying")
-          }
-        }
-      }
-    }
-    for(let i = 0; i < cols; i++){
-      for(let j = 0; j < rows; j++){
-        if (grid[i][j] == 0.1 || grid[i][j] == 1.1){
-          grid[i][j] = 1
-        } else {
-          grid[i][j] = 0
-        }
-      }
-    }
+    //console.log("step")
+    step()
   }
 
 
@@ -94,7 +66,16 @@ function toggleCell() {
 function keyPressed() {
   if(key === "r"){
     running = !running;
-    console.log(running);
+    //console.log(running);
+  }
+  if(key === "d"){
+    setGrid(0);
+  }
+  if(key === "a"){
+    setGrid(1)
+  }
+  if(key === "s"){
+    step()
   }
 }
 
@@ -112,6 +93,14 @@ function randomizeGrid() {
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
       grid[i][j] = floor(random(2));
+    }
+  }
+}
+
+function setGrid(state) {
+  for (let i = 0; i < cols; i++) {
+    for (let j = 0; j < rows; j++) {
+      grid[i][j] = state;
     }
   }
 }
@@ -134,3 +123,36 @@ function countNeighbors(x, y) {
   return ans;
 }
 
+function step(){
+  for(let i = 0; i < cols; i++){
+      for(let j = 0; j < rows; j++){
+        let negbors = countNeighbors(i, j)
+        if((survive.includes(negbors) && grid[i][j] == 1) || (born.includes(negbors) && grid[i][j] == 0)){
+          if(grid[i][j] == 1){
+            grid[i][j] = 1.1
+            //console.log("alive, survivng")
+          } else {
+            grid[i][j] = 0.1
+            //console.log("dead, born")
+          }
+        } else {
+          if(grid[i][j] == 1){
+            grid[i][j] = 0.9
+            //console.log("alive, dying")
+          } else {
+            grid[i][j] = -0.1
+            //console.log("dead, staying")
+          }
+        }
+      }
+    }
+    for(let i = 0; i < cols; i++){
+      for(let j = 0; j < rows; j++){
+        if (grid[i][j] == 0.1 || grid[i][j] == 1.1){
+          grid[i][j] = 1
+        } else {
+          grid[i][j] = 0
+        }
+      }
+    }
+}
