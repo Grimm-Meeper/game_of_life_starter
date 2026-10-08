@@ -2,6 +2,7 @@
 //goto: http://localhost:8000
 //if in codespace paste: python -m http.server
 //and do normal
+// e is edit, h is help, i is quick import
 
 let grid;
 let cols;
@@ -76,6 +77,12 @@ function keyPressed() {
   }
   if(key === "s"){
     step()
+  }
+  if(key === "e"){
+    edit();
+  }
+  if(key === "i"){
+    imp();
   }
 }
 
@@ -155,4 +162,25 @@ function step(){
         }
       }
     }
+}
+
+function edit(){
+  speed = prompt("How many seconds between generations?");
+  speed *= 60
+  if(prompt("Noise?") == true){
+    randomizeGrid()
+  }
+}
+
+function imp(){
+  let rules = prompt("Paste rules here in format b#/s#(case-sensitive)")
+  let slash = rules.indexOf("/")
+  born = []
+  survive = []
+  for(let i = 1; i < slash; i++){
+    born += rules[i]
+  }
+  for(let i = slash + 1; i < rules.length; i++){
+    survive += rules[i]
+  }
 }
