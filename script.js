@@ -10,8 +10,9 @@ let rows;
 let resolution = 15; // Size of each cell
 let running = false;
 let speed = 6;
-let born = [3]
-let survive = [2, 3]
+let born = [3];
+let survive = [2, 3];
+let set = -1;
 
 function setup() {
   createCanvas(windowWidth, windowHeight - 50);
@@ -28,18 +29,18 @@ function draw() {
   for(let i = 0; i < cols; i++){
     for(let j = 0; j < rows; j++){
       if(grid[i][j] == 1){
-        fill(255, 255, 255)
+        fill(255, 255, 255);
       } else {
-        fill(40, 40, 40)
+        fill(40, 40, 40);
       }
       noStroke;
-      rect(i * resolution, j * resolution, resolution, resolution)
+      rect(i * resolution, j * resolution, resolution, resolution);
     }
   }
   // 2. Compute next state (if not paused)
   if(running && frameCount % speed == 0){
     //console.log("step")
-    step()
+    step();
   }
 
 
@@ -49,18 +50,18 @@ function draw() {
 
 // 1. Click or Drag to Draw
 function mousePressed() {
-  toggleCell();
+  setCell(set);
 }
 
 function mouseDragged() {
-  toggleCell();
+  setCell(set);
 }
 
 function toggleCell() {
-  let TX = Math.floor(mouseX / resolution)
-  let TY = Math.floor(mouseY / resolution)
-  grid[TX][TY] += 1
-  grid[TX][TY] = grid[TX][TY] % 2
+  let TX = Math.floor(mouseX / resolution);
+  let TY = Math.floor(mouseY / resolution);
+  grid[TX][TY] += 1;
+  grid[TX][TY] = grid[TX][TY] % 2;
 }
 
 // 2. Keyboard Controls
@@ -73,10 +74,10 @@ function keyPressed() {
     setGrid(0);
   }
   if(key === "a"){
-    setGrid(1)
+    setGrid(1);
   }
   if(key === "s"){
-    step()
+    step();
   }
   if(key === "e"){
     edit();
@@ -84,6 +85,7 @@ function keyPressed() {
   if(key === "i"){
     imp();
   }
+  set = key;
 }
 
 // --- HELPER FUNCTIONS ---
@@ -122,7 +124,7 @@ function countNeighbors(x, y) {
             ans += 1;
           }
         } catch {
-          console.log("Out of bounds")
+          //console.log("Out of bounds");
         }
       }
     }
@@ -133,22 +135,22 @@ function countNeighbors(x, y) {
 function step(){
   for(let i = 0; i < cols; i++){
       for(let j = 0; j < rows; j++){
-        let negbors = countNeighbors(i, j)
+        let negbors = countNeighbors(i, j);
         if((survive.includes(negbors) && grid[i][j] == 1) || (born.includes(negbors) && grid[i][j] == 0)){
           if(grid[i][j] == 1){
-            grid[i][j] = 1.1
-            //console.log("alive, survivng")
+            grid[i][j] = 1.1;
+            //console.log("alive, survivng");
           } else {
             grid[i][j] = 0.1
-            //console.log("dead, born")
+            //console.log("dead, born");
           }
         } else {
           if(grid[i][j] == 1){
-            grid[i][j] = 0.9
-            //console.log("alive, dying")
+            grid[i][j] = 0.9;
+            //console.log("alive, dying");
           } else {
-            grid[i][j] = -0.1
-            //console.log("dead, staying")
+            grid[i][j] = -0.1;
+            //console.log("dead, staying");
           }
         }
       }
@@ -156,9 +158,9 @@ function step(){
     for(let i = 0; i < cols; i++){
       for(let j = 0; j < rows; j++){
         if (grid[i][j] == 0.1 || grid[i][j] == 1.1){
-          grid[i][j] = 1
+          grid[i][j] = 1;
         } else {
-          grid[i][j] = 0
+          grid[i][j] = 0;
         }
       }
     }
@@ -166,21 +168,33 @@ function step(){
 
 function edit(){
   speed = prompt("How many seconds between generations?");
-  speed *= 60
+  speed *= 60;
   if(prompt("Noise?") == true){
-    randomizeGrid()
+    randomizeGrid();
   }
 }
 
 function imp(){
-  let rules = prompt("Paste rules here in format b#/s#(case-sensitive)")
-  let slash = rules.indexOf("/")
-  born = []
-  survive = []
+  let rules = prompt("Paste rules here in format b#/s#(case-sensitive)");
+  let slash = rules.indexOf("/");
+  born = [];
+  survive = [];
   for(let i = 1; i < slash; i++){
-    born += rules[i]
+    born += rules[i];
   }
   for(let i = slash + 1; i < rules.length; i++){
-    survive += rules[i]
+    survive += rules[i];
+  }
+}
+
+function setCell(to){
+  let TX = Math.floor(mouseX / resolution);
+  let TY = Math.floor(mouseY / resolution);
+  if(to == 0){
+    grid[TX][TY] = 0;
+  } else if(to == 1){
+    grid[TX][TY] = 1;
+  } else {
+    toggleCell();
   }
 }
