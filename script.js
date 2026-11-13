@@ -2,7 +2,7 @@
 //goto: http://localhost:8000
 //if in codespace paste: python -m http.server
 //and do normal
-// e is edit, h is help, i is quick import
+// h is help
 
 let grid;
 let cols;
@@ -15,7 +15,7 @@ let survive = [2, 3];
 let set = -1;
 
 function setup() {
-  createCanvas(windowWidth, windowHeight - 50);
+  createCanvas(windowWidth - 20, windowHeight - 20);
   cols = floor(width / resolution);
   rows = floor(height / resolution);
 
@@ -102,7 +102,6 @@ function randomizeGrid() {
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
       grid[i][j] = floor(random(2));
-    }
   }
 }
 
@@ -167,9 +166,12 @@ function step(){
 }
 
 function edit(){
-  speed = prompt("How many seconds between generations?");
-  speed *= 60;
-  if(prompt("Noise?") == true){
+  let temp = prompt("How many frames between generations(60 fps)?");
+  while((temp - 0) == NaN){
+    temp = prompt("That was not a number. Please try again.");
+  }
+  speed = temp;
+  if(boolean(prompt("Fill with noise?"))){
     randomizeGrid();
   }
 }
@@ -179,11 +181,20 @@ function imp(){
   let slash = rules.indexOf("/");
   born = [];
   survive = [];
-  for(let i = 1; i < slash; i++){
-    born += rules[i];
-  }
-  for(let i = slash + 1; i < rules.length; i++){
-    survive += rules[i];
+  if(rules[0] == "b"){
+    for(let i = 1; i < slash; i++){
+      born += rules[i];
+    }
+    for(let i = slash + 1; i < rules.length; i++){
+      survive += rules[i];
+    }
+  } else {
+    for(let i = 1; i < slash; i++){
+      survive += rules[i];
+    }
+    for(let i = slash + 1; i < rules.length; i++){
+      born += rules[i];
+    }
   }
 }
 
